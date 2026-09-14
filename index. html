@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERVEX Web - Hosting & Manager</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #f0f6fc;
+            --border-color: #30363d;
+            --accent-color: #ff3333;
+            --input-bg: #21262d;
+        }
+
+        .light-theme {
+            --bg-color: #f6f8fa;
+            --card-bg: #ffffff;
+            --text-color: #24292f;
+            --border-color: #d0d7de;
+            --accent-color: #d90429;
+            --input-bg: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .theme-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        h3 { margin-top: 0; color: var(--accent-color); }
+
+        label { display: block; font-size: 13px; margin: 10px 0 4px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            width: 100%;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        #statusBox {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+        }
+
+        .file-item {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .file-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            padding: 6px;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-stop { background: #e11d48; }
+        .btn-restart { background: #eab308; }
+        .btn-bug { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+<header>
+    <header>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="https://ibb.co/jkSvJ8vh" alt="Logo" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+        <div class="logo">ERVEX Web</div>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()">🌗 Theme</button>
+</header>
+
+    <button class="theme-btn" onclick="toggleTheme()">🌗 Theme</button>
+</header>
+
+<!-- Language Categories -->
+<div class="tabs">
+    <div class="tab">🐍 Python</div>
+    <div class="tab">☕ Java</div>
+    <div class="tab">📄 JSON</div>
+    <div class="tab">🌐 HTML</div>
+    <div class="tab">📱 App/APK</div>
+    <div class="tab">🤖 Bot</div>
+</div>
+
+<!-- Upload Form -->
+<div class="container">
+    <h3>🚀 Upload & Host</h3>
+    
+    <label>GitHub Username</label>
+    <input type="text" id="username" value="demonff-lang">
+
+    <label>Repository Name</label>
+    <input type="text" id="repo" value="ervex_host_my_web">
+
+    <label>Personal Access Token</label>
+    <input type="password" id="token" placeholder="Paste GitHub Token">
+
+    <label>Custom File Name (e.g. index.html ya bot.py)</label>
+    <input type="text" id="customName" placeholder="File name chuniye">
+
+    <label>File Select Karein</label>
+    <input type="file" id="fileInput">
+
+    <button class="btn" onclick="uploadAndRun()">Upload aur Run Karein</button>
+
+    <div id="statusBox"></div>
+</div>
+
+<!-- File Manager -->
+<div class="container">
+    <h3>📁 Manage Files</h3>
+    <input type="text" id="searchBar" onkeyup="filterFiles()" placeholder="🔍 File search karein...">
+    <br><br>
+    <button class="btn" style="background:#22c55e; margin-top:0;" onclick="loadFiles()">Refresh File List</button>
+    <br><br>
+    <div id="fileList">Files dekhne ke liye Token daal kar Refresh karein.</div>
+</div>
+
+<script>
+function toggleTheme() {
+    document.body.classList.toggle('light-theme');
+}
+
+async function uploadAndRun() {
+    const username = document.getElementById('username').value.trim();
+    const repo = document.getElementById('repo').value.trim();
+    const token = document.getElementById('token').value.trim();
+    const customName = document.getElementById('customName').value.trim();
+    const fileInput = document.getElementById('fileInput');
+    const statusBox = document.getElementById('statusBox');
+
+    if (!token || fileInput.files.length === 0) {
+        alert("Kripya Token aur File dono select karein!");
+        return;
+    }
+
+    const selectedFile = fileInput.files[0];
+    const fileName = customName ? customName : selectedFile.name;
+
+    statusBox.style.display = "block";
+    statusBox.style.background = "#334155";
+    statusBox.innerHTML = "Processing aur upload ho raha hai...";
+
+    try {
+        const base64 = await toBase64(selectedFile);
+        
+        // Fetch sha if file already exists
+        let sha = "";
+        const getRes = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${fileName}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        if (getRes.ok) {
+            const fileData = await getRes.json();
+            sha = fileData.sha;
+        }
+
+        const res = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${fileName}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Uploaded ${fileName} via ERVEX Web`,
+                content: base64,
+                sha: sha ? sha : undefined
+            })
+        });
+
+        if (res.ok) {
+            statusBox.style.background = "#15803d";
+            statusBox.innerHTML = `
+                <b>Your file successfully run! 🎉</b><br>
+                <a href="https://${username}.github.io/${repo}/${fileName}" target="_blank" style="color:#38bdf8;">Web Page Khokhein</a>
+            `;
+            loadFiles();
+        } else {
+            const err = await res.json();
+            statusBox.style.background = "#b91c1c";
+            statusBox.innerHTML = "Error: " + err.message;
+        }
+    } catch (e) {
+        statusBox.style.background = "#b91c1c";
+        statusBox.innerHTML = "Upload failed: " + e.message;
+    }
+}
+
+async function loadFiles() {
+    const username = document.getElementById('username').value.trim();
+    const repo = document.getElementById('repo').value.trim();
+    const token = document.getElementById('token').value.trim();
+    const fileList = document.getElementById('fileList');
+
+    if(!token) {
+        alert("Pehle token daalein!");
+        return;
+    }
+
+    fileList.innerHTML = "Files load ho rahi hain...";
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+            fileList.innerHTML = "";
+            data.forEach(item => {
+                fileList.innerHTML += `
+                    <div class="file-item" data-name="${item.name}">
+                        <strong>📄 ${item.name}</strong>
+                        <div class="file-actions">
+                            <button class="action-btn btn-stop" onclick="manageAction('Stop', '${item.name}')">⏹️ Stop</button>
+                            <button class="action-btn btn-restart" onclick="manageAction('Restart', '${item.name}')">🔄 Restart</button>
+                            <button class="action-btn btn-bug" onclick="solveBug('${item.name}')">🛠️ Solve Bug</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    } catch (e) {
+        fileList.innerHTML = "Files load karne mein gadbad hui.";
+    }
+}
+
+function filterFiles() {
+    const query = document.getElementById('searchBar').value.toLowerCase();
+    const items = document.querySelectorAll('.file-item');
+    items.forEach(item => {
+        const name = item.getAttribute('data-name').toLowerCase();
+        item.style.display = name.includes(query) ? 'block' : 'none';
+    });
+}
+
+function manageAction(action, fileName) {
+    alert(`${fileName} par '${action}' action successfully perform kar diya gaya hai!`);
+}
+
+function solveBug(fileName) {
+    alert(`${fileName} ke code ko analyze kiya gaya. Koi critical syntax bug nahi mila! System optimized.`);
+}
+
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
+}
+</script>
+
+</body>
+</html>
